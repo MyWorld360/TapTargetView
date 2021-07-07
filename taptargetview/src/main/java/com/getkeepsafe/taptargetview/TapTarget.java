@@ -82,6 +82,7 @@ public class TapTarget {
   boolean cancelable = true;
   boolean tintTarget = true;
   boolean transparentTarget = false;
+  boolean shouldShowTarget = true;
   float descriptionTextAlpha = 0.54f;
 
   /**
@@ -206,6 +207,12 @@ public class TapTarget {
   /** Specify whether the target should be transparent **/
   public TapTarget transparentTarget(boolean transparent) {
     this.transparentTarget = transparent;
+    return this;
+  }
+
+  /** Specify whether the target should be shown **/
+  public TapTarget showTarget(boolean shouldShowTarget) {
+    this.shouldShowTarget = shouldShowTarget;
     return this;
   }
 

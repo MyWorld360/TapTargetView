@@ -106,6 +106,7 @@ public class TapTargetView extends View {
   boolean isDark;
   boolean debug;
   boolean shouldTintTarget;
+  boolean shouldShowTarget;
   boolean shouldDrawShadow;
   boolean cancelable;
   boolean visible;
@@ -551,6 +552,7 @@ public class TapTargetView extends View {
 
   protected void applyTargetOptions(Context context) {
     shouldTintTarget = !target.transparentTarget && target.tintTarget;
+    shouldShowTarget = target.shouldShowTarget;
     shouldDrawShadow = target.drawShadow;
     cancelable = target.cancelable;
 
@@ -687,13 +689,15 @@ public class TapTargetView extends View {
     c.drawCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, outerCirclePaint);
 
     targetCirclePaint.setAlpha(targetCircleAlpha);
-    if (targetCirclePulseAlpha > 0) {
+    if (targetCirclePulseAlpha > 0 && shouldShowTarget) {
       targetCirclePulsePaint.setAlpha(targetCirclePulseAlpha);
       c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
           targetCirclePulseRadius, targetCirclePulsePaint);
     }
-    c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
-        targetCircleRadius, targetCirclePaint);
+    if (shouldShowTarget) {
+      c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
+              targetCircleRadius, targetCirclePaint);
+    }
 
     saveCount = c.save();
     {
