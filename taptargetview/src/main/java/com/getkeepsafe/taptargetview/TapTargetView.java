@@ -33,6 +33,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -88,6 +89,7 @@ public class TapTargetView extends View {
   final ViewManager parent;
   final TapTarget target;
   final Rect targetBounds;
+  final RectF targetRoundedBounds;
 
   final TextPaint titlePaint;
   final TextPaint descriptionPaint;
@@ -95,6 +97,7 @@ public class TapTargetView extends View {
   final Paint outerCircleShadowPaint;
   final Paint targetCirclePaint;
   final Paint targetCirclePulsePaint;
+  final Paint targetRoundedRectPaint;
 
   CharSequence title;
   @Nullable
@@ -108,6 +111,7 @@ public class TapTargetView extends View {
   boolean shouldTintTarget;
   boolean shouldShowTarget;
   boolean shouldDrawShadow;
+  boolean shouldShowRoundedRect;
   boolean cancelable;
   boolean visible;
 
@@ -395,6 +399,7 @@ public class TapTargetView extends View {
 
     outerCirclePath = new Path();
     targetBounds = new Rect();
+    targetRoundedBounds = new RectF(targetBounds);
     drawingBounds = new Rect();
 
     titlePaint = new TextPaint();
@@ -424,6 +429,9 @@ public class TapTargetView extends View {
 
     targetCirclePulsePaint = new Paint();
     targetCirclePulsePaint.setAntiAlias(true);
+
+    targetRoundedRectPaint = new Paint();
+    targetRoundedRectPaint.setAntiAlias(true);
 
     applyTargetOptions(context);
 
@@ -456,7 +464,14 @@ public class TapTargetView extends View {
           public void run() {
             final int[] offset = new int[2];
 
-            targetBounds.set(target.bounds());
+            final Rect bounds = target.bounds();
+            targetBounds.set(bounds);
+            final int boundsOffset = 15;
+            targetRoundedBounds.set(new RectF(
+                    bounds.left - 2 * boundsOffset,
+                    bounds.top - boundsOffset,
+                    bounds.right + 2 * boundsOffset,
+                    bounds.bottom + boundsOffset));
 
             getLocationOnScreen(offset);
             targetBounds.offset(-offset[0], -offset[1]);
@@ -553,6 +568,7 @@ public class TapTargetView extends View {
   protected void applyTargetOptions(Context context) {
     shouldTintTarget = !target.transparentTarget && target.tintTarget;
     shouldShowTarget = target.shouldShowTarget;
+    shouldShowRoundedRect = target.shouldShowRoundedRect;
     shouldDrawShadow = target.drawShadow;
     cancelable = target.cancelable;
 
@@ -604,6 +620,7 @@ public class TapTargetView extends View {
     }
 
     if (target.transparentTarget) {
+      targetRoundedRectPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
       targetCirclePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
@@ -697,6 +714,10 @@ public class TapTargetView extends View {
     if (shouldShowTarget) {
       c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
               targetCircleRadius, targetCirclePaint);
+    }
+
+    if (shouldShowRoundedRect) {
+      c.drawRoundRect(targetRoundedBounds, 40, 40, targetRoundedRectPaint);
     }
 
     saveCount = c.save();

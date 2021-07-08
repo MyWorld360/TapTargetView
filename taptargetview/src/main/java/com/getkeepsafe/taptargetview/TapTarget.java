@@ -83,6 +83,7 @@ public class TapTarget {
   boolean tintTarget = true;
   boolean transparentTarget = false;
   boolean shouldShowTarget = true;
+  boolean shouldShowRoundedRect = false;
   float descriptionTextAlpha = 0.54f;
 
   /**
@@ -213,6 +214,21 @@ public class TapTarget {
   /** Specify whether the target should be shown **/
   public TapTarget showTarget(boolean shouldShowTarget) {
     this.shouldShowTarget = shouldShowTarget;
+    return this;
+  }
+
+
+  /** Specify whether the target should be rounded rect **/
+  public TapTarget showRoundedRect(boolean shouldShowRoundedRect) {
+    if (bounds == null) {
+      throw new IllegalArgumentException("Cannot pass null bounds with shouldShowRoundedRect");
+    }
+
+    this.shouldShowRoundedRect = shouldShowRoundedRect;
+    if (shouldShowRoundedRect) {
+      this.shouldShowTarget = false;
+      this.transparentTarget = true;
+    }
     return this;
   }
 
